@@ -1,0 +1,12 @@
+{
+  "name": "expo-react-native-snake",
+  "displayName": "expo-react-native-snake",
+  "expo": {
+    "name": "expo-react-native-snake",
+    "slug": "expo-react-native-snake",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
