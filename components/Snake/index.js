@@ -1,19 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Alert,
-  Button,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import * as Constants from '../../constants';
+import { randomBetween } from '../../utils/randomBetween';
+import Food from '../Food';
 import GameLoop from '../GameLoop';
 import Head from '../Head';
-import Food from '../Food';
 import Tail from '../Tail';
-import { randomBetween } from '../../utils/randomBetween';
 
 const Snake = () => {
   const [engine, setEngine] = useState();
@@ -23,10 +17,10 @@ const Snake = () => {
 
   const eventHandler = (e) => {
     if (e.type === 'game-over') {
-      setRunning(false);
-      Alert.alert('Game Over', 'Teu joguin acabo', [
-        { text: 'Blz', onPress: () => {} },
-      ]);
+      // setRunning(false);
+      // Alert.alert('Game Over', 'Teu joguin acabo', [
+      //   { text: 'Blz', onPress: () => {} },
+      // ]);
     }
   };
 
@@ -60,7 +54,7 @@ const Snake = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style='auto' />
+      <StatusBar hidden />
       <GameEngine
         ref={(ref) => setEngine(ref)}
         systems={[GameLoop]}
@@ -97,7 +91,6 @@ const Snake = () => {
           },
         }}
       />
-      <Button title='New Game' onPress={resetHandler} />
       <View style={styles.controls}>
         <View style={styles.controlRow}>
           <TouchableOpacity
@@ -112,7 +105,11 @@ const Snake = () => {
           >
             <View style={styles.control} />
           </TouchableOpacity>
-          <View style={[styles.control, { backgroundColor: null }]} />
+          <TouchableOpacity style={styles.newGameButton} onPress={resetHandler}>
+            <View>
+              <Text style={styles.newGame}>NEW GAME</Text>
+            </View>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => engine.dispatch({ type: 'move-right' })}
           >
@@ -140,7 +137,7 @@ const styles = StyleSheet.create({
   },
   controls: {
     width: 300,
-    height: 300,
+    height: 250,
     flexDirection: 'column',
   },
   controlRow: {
@@ -154,6 +151,22 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     backgroundColor: 'blue',
+  },
+  newGameButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 100,
+    height: 100,
+  },
+  newGameView: {
+    backgroundColor: null,
+    width: 100,
+    height: 100,
+  },
+  newGame: {
+    color: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

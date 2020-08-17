@@ -2,70 +2,92 @@ import * as Constants from '../../constants';
 import { randomBetween } from '../../utils/randomBetween';
 
 const GameLoop = (entities, { touches, events, dispatch }) => {
-  let head = entities.head;
-  let food = entities.food;
-  let tail = entities.tail;
+  let {
+    head: {
+      xspeed,
+      yspeed,
+      nextMove,
+      updateFrequency,
+      position: [headX, headY],
+      ...restHead
+    },
+    food: {
+      position: [foodX, foodY],
+      ...restFood
+    },
+    tail: { elements: tailElements, ...restTail },
+  } = entities;
 
   if (events.length) {
     for (let i = 0; i < events.length; i++) {
-      if (events[i].type === 'move-up' && head.yspeed !== 1) {
-        head.yspeed = -1;
-        head.xspeed = 0;
-      } else if (events[i].type === 'move-down' && head.yspeed !== -1) {
-        head.yspeed = 1;
-        head.xspeed = 0;
-      } else if (events[i].type === 'move-left' && head.xspeed !== 1) {
-        head.xspeed = -1;
-        head.yspeed = 0;
-      } else if (events[i].type === 'move-right' && head.xspeed !== -1) {
-        head.xspeed = 1;
-        head.yspeed = 0;
+      const event = events[i];
+      if (event.type === 'move-up' && yspeed !== 1) {
+        yspeed = -1;
+        xspeed = 0;
+      } else if (event.type === 'move-down' && yspeed !== -1) {
+        yspeed = 1;
+        xspeed = 0;
+      } else if (event.type === 'move-left' && xspeed !== 1) {
+        xspeed = -1;
+        yspeed = 0;
+      } else if (event.type === 'move-right' && xspeed !== -1) {
+        xspeed = 1;
+        yspeed = 0;
       }
     }
   }
 
-  head.nextMove -= 1;
+  nextMove -= 1;
 
-  if (head.nextMove === 0) {
-    head.nextMove = head.updateFrequency;
+  if (nextMove === 0) {
+    nextMove = updateFrequency;
 
     if (
-      head.position[0] + head.xspeed < 0 ||
-      head.position[0] + head.xspeed >= Constants.GRID_SIZE ||
-      head.position[1] + head.yspeed < 0 ||
-      head.position[1] + head.yspeed >= Constants.GRID_SIZE
+      headX + xspeed < 0 ||
+      headX + xspeed >= Constants.GRID_SIZE ||
+      headY + yspeed < 0 ||
+      headY + yspeed >= Constants.GRID_SIZE
     ) {
       dispatch({ type: 'game-over' });
     } else {
-      tail.elements = [[head.position[0], head.position[1]]]
-        .concat(tail.elements)
+      tailElements = [[headX, headY, xspeed, yspeed]]
+        .concat(tailElements)
         .slice(0, -1);
 
-      head.position[0] += head.xspeed;
-      head.position[1] += head.yspeed;
+      headX += xspeed;
+      headY += yspeed;
 
-      for (let i = 0; i < tail.elements.length; i++) {
-        if (
-          head.position[0] === tail.elements[i][0] &&
-          head.position[1] === tail.elements[i][1]
-        ) {
+      for (let i = 0; i < tailElements.length; i++) {
+        if (headX === tailElements[i][0] && headY === tailElements[i][1]) {
           dispatch({ type: 'game-over' });
         }
       }
 
-      if (
-        head.position[0] === food.position[0] &&
-        head.position[1] === food.position[1]
-      ) {
-        tail.elements = [[food.position[0], food.position[1]]].concat(
-          tail.elements
-        );
-        food.position[0] = randomBetween(0, Constants.GRID_SIZE - 1);
-        food.position[1] = randomBetween(0, Constants.GRID_SIZE - 1);
+      if (headX === foodX && headY === foodY) {
+        tailElements = [[foodX, foodY]].concat(tailElements);
+        foodX = randomBetween(0, Constants.GRID_SIZE - 1);
+        foodY = randomBetween(0, Constants.GRID_SIZE - 1);
       }
     }
   }
-  return entities;
+  return {
+    head: {
+      xspeed,
+      yspeed,
+      nextMove,
+      updateFrequency,
+      position: [headX, headY],
+      ...restHead,
+    },
+    food: {
+      position: [foodX, foodY],
+      ...restFood,
+    },
+    tail: {
+      elements: tailElements,
+      ...restTail,
+    },
+  };
 };
 
 export default GameLoop;

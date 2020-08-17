@@ -1,5 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
+import SpriteSheet from 'rn-sprite-sheet';
+import * as Constants from '../../constants';
 
 const Food = ({ size, position: [x, y] }) => {
   return (
@@ -7,12 +9,19 @@ const Food = ({ size, position: [x, y] }) => {
       style={{
         width: size,
         height: size,
-        backgroundColor: 'green',
         position: 'absolute',
         left: x * size,
         top: y * size,
       }}
-    ></View>
+    >
+      <SpriteSheet
+        source={require('../../assets/snake-sprites.png')}
+        columns={5}
+        rows={4}
+        width={size}
+        imageStyle={Constants.fruit}
+      />
+    </View>
   );
 };
 
